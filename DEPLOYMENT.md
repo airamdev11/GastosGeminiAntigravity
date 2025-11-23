@@ -37,19 +37,20 @@ Si aún no tienes un proyecto de Supabase:
 2. Haz clic en **"Add new site"** → **"Import an existing project"**
 3. Conecta tu proveedor de Git (GitHub/GitLab/Bitbucket)
 4. Selecciona el repositorio `gastos-pastel`
-5. Configura los siguientes ajustes:
-   - **Build command**: `npm run build`
-   - **Publish directory**: `dist/gastos-pastel/browser`
-6. Haz clic en **"Show advanced"** → **"New variable"** y agrega:
-   - `SUPABASE_URL`: Tu Project URL de Supabase
-   - `SUPABASE_ANON_KEY`: Tu Anon key de Supabase
+5. Netlify detectará automáticamente la configuración de `netlify.toml`
+6. **IMPORTANTE**: Haz clic en **"Show advanced"** → **"Add environment variable"** y agrega:
+   - Variable: `SUPABASE_URL`, Value: Tu Project URL de Supabase (ej: `https://xxxxx.supabase.co`)
+   - Variable: `SUPABASE_ANON_KEY`, Value: Tu Anon key de Supabase
 
 > [!IMPORTANT]
-> Asegúrate de agregar las variables de entorno antes de hacer el deploy. Las variables se pueden configurar también después en **Site settings** → **Environment variables**.
+> Las variables de entorno **deben** estar configuradas ANTES del primer deploy. El script `setup-env.js` las usa para generar los archivos de configuración durante el build.
 
 7. Haz clic en **"Deploy site"**
-8. Espera a que termine el despliegue (2-3 minutos)
-9. Tu sitio estará disponible en una URL como `https://random-name.netlify.app`
+8. El deploy ejecutará automáticamente:
+   - `node setup-env.js` (genera archivos de environment)
+   - `npm run build` (construye la aplicación)
+9. Espera a que termine el despliegue (2-3 minutos)
+10. Tu sitio estará disponible en una URL como `https://random-name.netlify.app`
 
 ### Opción B: Deploy Manual (Más Rápido para Pruebas)
 
@@ -104,6 +105,15 @@ Si usaste la Opción A (Deploy con Git):
 - Verifica que las variables de entorno estén configuradas correctamente en Netlify
 - Confirma que el Project URL y Anon Key sean correctos
 - Revisa la consola del navegador para más detalles
+
+### Error: "Could not resolve ../../environments/environment"
+
+Este error ocurre cuando las variables de entorno no están configuradas en Netlify:
+
+1. Ve a **Site settings** → **Environment variables**
+2. Verifica que `SUPABASE_URL` y `SUPABASE_ANON_KEY` estén definidas
+3. Haz un nuevo deploy: **Deploys** → **Trigger deploy** → **Deploy site**
+4. Revisa los logs del build para confirmar que `setup-env.js` se ejecute correctamente
 
 ### Build fallido
 
