@@ -43,4 +43,4 @@ __screenshots__/
 Thumbs.db
 
 #private files
-#/environments/environment.ts
+/environments/environment.ts
