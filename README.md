@@ -14,12 +14,14 @@ Una aplicación web moderna para parejas que quieren controlar sus finanzas comp
 ## ✨ Características
 
 ### 🎨 Diseño Moderno
+
 - **Colores pastel** para una experiencia visual agradable
 - **Modo oscuro** con toggle instantáneo
 - **Animaciones suaves** en todas las transiciones
 - **Responsive** y optimizado para móviles
 
 ### 💰 Gestión de Gastos
+
 - **Registro rápido** de gastos con categorías visuales
 - **7 categorías**: Comida 🍔, Transporte 🚕, Casa 🏠, Ocio 🍿, Salud 💊, Mascotas 🐶, Otros 📦
 - **Dashboard mensual** con estadísticas y gráficos
@@ -27,23 +29,27 @@ Una aplicación web moderna para parejas que quieren controlar sus finanzas comp
 - **Export a Excel** de reportes mensuales
 
 ### 📊 Presupuestos
+
 - **Define límites** por categoría
 - **Barras de progreso** con colores según estado
 - **3 niveles**: 🟢 OK (0-69%) | 🟡 Cuidado (70-89%) | 🔴 Peligro (90-100%+)
 - **Actualización automática** con gastos del mes
 
 ### 🚨 Notificaciones
+
 - **Alertas automáticas** al exceder presupuesto
 - **Banner flotante** visible en toda la app
 - **Mensajes descriptivos** con categoría y monto
 - **Dismissible** - cierra las que ya viste
 
 ### ⚖️ Balance de Pareja
+
 - **Cálculo automático** de quién debe a quién
 - **Mensajes amigables** sobre próxima ronda
 - **Por mes** - revisa históricos
 
 ### 📱 PWA (Progressive Web App)
+
 - **Instalable** en Android e iOS
 - **Icono personalizado** en pantalla de inicio
 - **Experiencia nativa** sin barra del navegador
@@ -54,6 +60,7 @@ Una aplicación web moderna para parejas que quieren controlar sus finanzas comp
 ## 🚀 Inicio Rápido
 
 ### Prerequisitos
+
 - Node.js 18+ y npm
 - Cuenta en [Supabase](https://supabase.com) (gratuita)
 
@@ -70,7 +77,6 @@ npm install
 # Configurar Supabase
 # 1. Crear proyecto en supabase.com
 # 2. Copiar URL y anon key
-# 3. Editar src/environments/environment.ts
 
 # Crear tabla (ejecutar SQL en Supabase)
 # Ver sección "Base de Datos" más abajo
@@ -155,15 +161,15 @@ npm run lint          # Lint código
 
 ## 🎨 Stack Tecnológico
 
-| Categoría | Tecnología |
-|-----------|-----------|
-| **Framework** | Angular 20.3 (Standalone) |
-| **Lenguaje** | TypeScript 5.9 |
-| **Estilos** | Tailwind CSS 4.1 |
-| **Backend** | Supabase (PostgreSQL + Auth) |
-| **Build** | Vite + Angular CLI |
-| **Charts** | Chart.js 4.x (opcional) |
-| **PWA** | Web App Manifest |
+| Categoría     | Tecnología                   |
+| ------------- | ---------------------------- |
+| **Framework** | Angular 20.3 (Standalone)    |
+| **Lenguaje**  | TypeScript 5.9               |
+| **Estilos**   | Tailwind CSS 4.1             |
+| **Backend**   | Supabase (PostgreSQL + Auth) |
+| **Build**     | Vite + Angular CLI           |
+| **Charts**    | Chart.js 4.x (opcional)      |
+| **PWA**       | Web App Manifest             |
 
 **Bundle final:** 116 KB (gzipped) ⚡
 
@@ -172,11 +178,13 @@ npm run lint          # Lint código
 ## 📱 Instalación como App
 
 ### Android / Chrome
+
 1. Abre la app en Chrome
 2. Menú (⋮) → "Añadir a pantalla de inicio"
 3. ✅ Listo
 
 ### iOS / Safari
+
 1. Abre la app en Safari
 2. Compartir → "Añadir a pantalla de inicio"
 3. ✅ Listo
@@ -203,17 +211,20 @@ npm run lint          # Lint código
 ## 🚢 Deploy
 
 ### Netlify
+
 ```bash
 npm run build
 # Deploy carpeta: dist/gastos-pastel
 ```
 
 ### Vercel
+
 ```bash
 vercel --prod
 ```
 
 ### Firebase
+
 ```bash
 firebase init hosting
 firebase deploy
@@ -269,7 +280,7 @@ Este proyecto está bajo licencia MIT. Ver archivo `LICENSE` para detalles.
 
 **Proyecto:** GastosDuo  
 **Versión:** 1.0.0  
-**Año:** 2025  
+**Año:** 2025
 
 ---
 
