@@ -42,8 +42,8 @@ __screenshots__/
 .DS_Store
 Thumbs.db
 
-#private files
-/src/environments/environment.development.ts
+# 🔒 ARCHIVOS PRIVADOS - NO SUBIR A GITHUB
+# Estos archivos contienen credenciales sensibles
 /src/environments/environment.ts
+/src/environments/environment.development.ts
 /src/environments/environment.production.ts
-
