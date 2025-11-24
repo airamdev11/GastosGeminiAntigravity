@@ -33,13 +33,7 @@ export class ExpenseService {
     });
   }
 
-  // --- AUTENTICACIÓN (EMAIL/PASSWORD) ---
-  async signUp(email: string, password: string) {
-    // Crea usuario y loguea automáticamente
-    const { data, error } = await this.supabase.auth.signUp({ email, password });
-    return { data, error };
-  }
-
+  // --- AUTENTICACIÓN (SOLO LOGIN) ---
   async signIn(email: string, password: string) {
     const { data, error } = await this.supabase.auth.signInWithPassword({ email, password });
     return { data, error };

@@ -37,14 +37,7 @@
         (click)="handleAuth()"
         class="w-full bg-black text-white py-3 rounded-xl font-bold shadow-xl active:scale-95 transition"
       >
-        {{ isLoginMode() ? 'Entrar' : 'Crear Cuenta' }}
-      </button>
-
-      <button
-        (click)="isLoginMode.set(!isLoginMode())"
-        class="w-full text-gray-400 text-sm py-2 hover:text-pastel-text"
-      >
-        {{ isLoginMode() ? '¿No tienes cuenta? Regístrate' : '¿Ya tienes cuenta? Entra' }}
+        Entrar
       </button>
     </div>
   </div>

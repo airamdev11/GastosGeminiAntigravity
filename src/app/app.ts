@@ -20,10 +20,9 @@ export class App {
 
   // UI State
   currentTab = signal<'dashboard' | 'movements' | 'balance' | 'budgets'>('movements');
-  isLoginMode = signal(true); // Toggle entre Login y Registro
   isDarkMode = signal(false); // Modo oscuro
 
-  // Formulario Auth
+  // Formulario Auth (Solo Login)
   authData = { email: '', password: '' };
   authError = signal(''); // Signal para reactividad inmediata
   authAttempts = 0;
@@ -222,25 +221,13 @@ export class App {
     this.authAttempts++;
     this.lastAttemptTime = now;
 
-    if (this.isLoginMode()) {
-      const { error } = await this.expenseService.signIn(email, password);
-      if (error) {
-        this.authError.set('Credenciales incorrectas');
-      } else {
-        // Limpiar campos después de login exitoso
-        this.authData = { email: '', password: '' };
-        this.authAttempts = 0;
-      }
+    const { error } = await this.expenseService.signIn(email, password);
+    if (error) {
+      this.authError.set('Credenciales incorrectas');
     } else {
-      const { error } = await this.expenseService.signUp(email, password);
-      if (error) {
-        this.authError.set('Error al registrar. Intenta otro correo.');
-      } else {
-        alert('¡Cuenta creada! Ya estás dentro.');
-        // Limpiar campos después de registro exitoso
-        this.authData = { email: '', password: '' };
-        this.authAttempts = 0;
-      }
+      // Limpiar campos después de login exitoso
+      this.authData = { email: '', password: '' };
+      this.authAttempts = 0;
     }
   }
 
