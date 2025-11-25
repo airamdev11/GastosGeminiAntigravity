@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Expense, ExpenseService } from './services/expense';
+import { Expense, ExpenseService, InstallmentStats } from './services/expense';
 
 export interface Budget {
   category: string;
@@ -70,6 +70,18 @@ export class App {
     date: this.getToday(),
   };
 
+  // Gastos a Plazos - UI State
+  showInstallmentForm = signal(false);
+  installmentConceptForm = {
+    name: '',
+    totalAmount: 0,
+    category: 'Comida',
+  };
+
+  // Vincular gasto a concepto a plazos
+  linkToInstallment = signal(false);
+  selectedInstallmentId = signal<number | null>(null);
+
   categories = ['Comida', 'Transporte', 'Casa', 'Ocio', 'Salud', 'Mascotas', 'Otros'];
 
   categoryIcons: Record<string, string> = {
@@ -89,8 +101,16 @@ export class App {
 
   // 1. FILTRO MAESTRO (Base de todos los reportes)
   // Todos los cálculos ahora dependen de esto. Si cambias el mes, todo se recalcula solo.
+  // IMPORTANTE: Filtrar solo gastos reales (no conceptos a plazos)
   filteredExpenses = computed(() => {
-    return this.expenseService.expenses().filter((e) => e.date.startsWith(this.selectedMonth()));
+    return this.expenseService
+      .expenses()
+      .filter((e) => e.date.startsWith(this.selectedMonth()) && !e.is_installment_concept);
+  });
+
+  // Conceptos a plazos activos
+  installmentConcepts = computed(() => {
+    return this.expenseService.getAllInstallmentStats();
   });
   // Mis Gastos del Mes
   myExpenses = computed(() =>
@@ -296,12 +316,31 @@ export class App {
       return;
     }
 
+    // Validación especial si es aportación a concepto a plazos
+    if (this.linkToInstallment() && this.selectedInstallmentId()) {
+      const validation = this.expenseService.validateContribution(
+        this.selectedInstallmentId()!,
+        this.expenseForm.amount
+      );
+
+      if (!validation.valid) {
+        alert(validation.error);
+        return;
+      }
+    }
+
+    // Preparar el gasto con campos de vinculación si aplica
+    const expenseToSave: Expense = {
+      ...this.expenseForm,
+      installment_concept_id: this.linkToInstallment() ? this.selectedInstallmentId() : null,
+    };
+
     // Intentar guardar
     let success = false;
     if (this.isEditing() && this.editingId()) {
-      success = await this.expenseService.updateExpense(this.editingId()!, this.expenseForm);
+      success = await this.expenseService.updateExpense(this.editingId()!, expenseToSave);
     } else {
-      success = await this.expenseService.addExpense(this.expenseForm);
+      success = await this.expenseService.addExpense(expenseToSave);
     }
 
     if (success) {
@@ -327,6 +366,59 @@ export class App {
       category: 'Comida',
       date: this.getToday(),
     };
+    this.linkToInstallment.set(false);
+    this.selectedInstallmentId.set(null);
+  }
+
+  // --- GASTOS A PLAZOS ---
+
+  async createInstallmentConcept() {
+    if (!this.installmentConceptForm.name || this.installmentConceptForm.name.trim().length === 0) {
+      alert('El nombre del concepto no puede estar vacío');
+      return;
+    }
+
+    if (this.installmentConceptForm.totalAmount <= 0) {
+      alert('El monto total debe ser mayor a 0');
+      return;
+    }
+
+    if (this.installmentConceptForm.totalAmount > 10000000) {
+      alert('El monto es demasiado grande (máx $10,000,000)');
+      return;
+    }
+
+    const success = await this.expenseService.createInstallmentConcept(
+      this.installmentConceptForm.name,
+      this.installmentConceptForm.totalAmount,
+      this.installmentConceptForm.category,
+      this.getToday()
+    );
+
+    if (success) {
+      this.resetInstallmentForm();
+      this.showInstallmentForm.set(false);
+      alert('✅ Concepto a plazos creado exitosamente');
+    }
+  }
+
+  resetInstallmentForm() {
+    this.installmentConceptForm = {
+      name: '',
+      totalAmount: 0,
+      category: 'Comida',
+    };
+  }
+
+  toggleInstallmentForm() {
+    this.showInstallmentForm.set(!this.showInstallmentForm());
+    if (!this.showInstallmentForm()) {
+      this.resetInstallmentForm();
+    }
+  }
+
+  getInstallmentStats(conceptId: number): InstallmentStats | null {
+    return this.expenseService.getInstallmentStats(conceptId);
   }
 
   // Helper para sanitizar CSV (prevenir CSV injection)

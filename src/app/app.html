@@ -296,6 +296,50 @@
           </button>
         </div>
 
+        <!-- Checkbox para vincular a concepto a plazos -->
+        <div
+          *ngIf="!isEditing()"
+          class="flex items-center gap-3 p-3 rounded-xl border transition"
+          [style.border-color]="'var(--border-color)'"
+        >
+          <input
+            type="checkbox"
+            [(ngModel)]="linkToInstallment"
+            id="linkInstallment"
+            class="w-5 h-5 rounded accent-black cursor-pointer"
+          />
+          <label
+            for="linkInstallment"
+            class="text-sm font-semibold cursor-pointer flex-1"
+            [style.color]="'var(--text-primary)'"
+          >
+            📅 Es aportación a un gasto a plazos
+          </label>
+        </div>
+
+        <!-- Selector de concepto a plazos -->
+        <div *ngIf="linkToInstallment() && !isEditing()" class="space-y-2">
+          <select [(ngModel)]="selectedInstallmentId" class="input-pastel">
+            <option [ngValue]="null">Selecciona el concepto</option>
+            <option *ngFor="let concept of installmentConcepts()" [ngValue]="concept.conceptId">
+              {{ concept.conceptName }} - Restante: ${{ concept.remaining }}
+            </option>
+          </select>
+
+          <!-- Mostrar información del concepto seleccionado -->
+          <div
+            *ngIf="selectedInstallmentId()"
+            class="p-3 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800"
+          >
+            <p class="text-xs font-semibold text-blue-800 dark:text-blue-200">
+              💡 Monto restante: ${{
+                getInstallmentStats(selectedInstallmentId()!)?.remaining || 0
+              }}
+              - No puedes aportar más que esto.
+            </p>
+          </div>
+        </div>
+
         <button
           (click)="saveExpense()"
           class="w-full py-4 rounded-xl font-bold shadow-xl active:scale-95 transition mt-2 text-white"
@@ -304,6 +348,156 @@
         >
           {{ isEditing() ? 'Guardar Cambios' : 'Agregar Gasto' }}
         </button>
+      </div>
+    </div>
+
+    <!-- TOGGLE: Botón para mostrar formulario de concepto a plazos -->
+    <button
+      (click)="toggleInstallmentForm()"
+      class="w-full py-3 rounded-xl font-bold shadow-md active:scale-95 transition border-2"
+      [class.border-pastel-primary]="showInstallmentForm()"
+      [class.bg-pastel-primary]="showInstallmentForm()"
+      [class.text-white]="showInstallmentForm()"
+      [class.border-gray-200]="!showInstallmentForm()"
+      [style.background-color]="!showInstallmentForm() ? 'var(--bg-card)' : ''"
+      [style.color]="!showInstallmentForm() ? 'var(--text-primary)' : ''"
+    >
+      {{ showInstallmentForm() ? '✕ Cerrar' : '➕ Crear Concepto a Plazos' }}
+    </button>
+
+    <!-- FORMULARIO: Crear concepto a plazos (colapsable) -->
+    <div
+      *ngIf="showInstallmentForm()"
+      class="p-6 rounded-[2rem] shadow-lg border animate-fade-in"
+      [style.background-color]="'var(--bg-card)'"
+      [style.border-color]="'var(--border-color)'"
+    >
+      <h3 class="font-bold text-xl mb-4" [style.color]="'var(--text-primary)'">
+        Nuevo Concepto a Plazos 📅
+      </h3>
+      <p class="text-sm mb-4" [style.color]="'var(--text-secondary)'">
+        Crea un concepto para un gasto grande que pagarás en varias aportaciones
+      </p>
+
+      <div class="space-y-4">
+        <input
+          [(ngModel)]="installmentConceptForm.name"
+          placeholder="Ej: Compra de Laptop"
+          class="input-pastel text-lg"
+        />
+
+        <div class="flex items-center gap-2">
+          <span class="text-2xl font-bold" [style.color]="'var(--text-secondary)'">$</span>
+          <input
+            [(ngModel)]="installmentConceptForm.totalAmount"
+            type="number"
+            min="0"
+            step="100"
+            placeholder="Monto total"
+            class="input-pastel font-bold text-xl flex-1"
+          />
+        </div>
+
+        <div class="grid grid-cols-4 gap-2">
+          <button
+            *ngFor="let cat of categories"
+            (click)="installmentConceptForm.category = cat"
+            class="p-2 rounded-xl text-xl flex flex-col items-center justify-center transition border-2"
+            [class.border-black]="installmentConceptForm.category === cat"
+            [class.border-transparent]="installmentConceptForm.category !== cat"
+            [style.background-color]="
+              installmentConceptForm.category === cat ? 'var(--bg-input)' : 'transparent'
+            "
+          >
+            {{ getIcon(cat) }}
+          </button>
+        </div>
+
+        <button
+          (click)="createInstallmentConcept()"
+          class="w-full bg-black text-white py-4 rounded-xl font-bold shadow-xl active:scale-95 transition"
+        >
+          Crear Concepto
+        </button>
+      </div>
+    </div>
+
+    <!-- SECCIÓN: Conceptos a plazos activos -->
+    <div *ngIf="installmentConcepts().length > 0" class="space-y-3">
+      <h3 class="font-bold px-2" [style.color]="'var(--text-primary)'">
+        Conceptos a Plazos Activos
+      </h3>
+
+      <div
+        *ngFor="let concept of installmentConcepts()"
+        class="p-4 rounded-2xl shadow-sm border"
+        [style.background-color]="'var(--bg-card)'"
+        [style.border-color]="'var(--border-color)'"
+      >
+        <!-- Encabezado del concepto -->
+        <div class="flex justify-between items-start mb-3">
+          <div class="flex-1">
+            <div class="flex items-center gap-2">
+              <span class="text-2xl">{{ getIcon(concept.category) }}</span>
+              <h4 class="font-bold text-base" [style.color]="'var(--text-primary)'">
+                {{ concept.conceptName }}
+              </h4>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">
+              Total: ${{ concept.totalAmount }} · Aportado: ${{ concept.contributed }}
+            </p>
+          </div>
+          <div class="text-right">
+            <p class="text-2xl font-bold" [style.color]="'var(--text-primary)'">
+              ${{ concept.remaining }}
+            </p>
+            <p class="text-xs text-gray-400">restante</p>
+          </div>
+        </div>
+
+        <!-- Barra de progreso -->
+        <div class="mb-3">
+          <div class="flex justify-between text-xs font-bold mb-1">
+            <span [style.color]="'var(--text-secondary)'">Progreso</span>
+            <span [style.color]="'var(--text-secondary)'"
+              >{{ concept.percentage | number : '1.0-0' }}%</span
+            >
+          </div>
+          <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+            <div
+              class="h-full transition-all duration-1000"
+              [style.width.%]="concept.percentage > 100 ? 100 : concept.percentage"
+              [class.bg-green-500]="concept.percentage < 70"
+              [class.bg-yellow-500]="concept.percentage >= 70 && concept.percentage < 90"
+              [class.bg-pastel-primary]="concept.percentage >= 90"
+            ></div>
+          </div>
+        </div>
+
+        <!-- Lista de contribuciones -->
+        <details class="text-sm">
+          <summary class="cursor-pointer font-semibold" [style.color]="'var(--text-secondary)'">
+            Ver aportaciones ({{ concept.contributions.length }})
+          </summary>
+          <div class="mt-2 space-y-2">
+            <div
+              *ngFor="let contrib of concept.contributions"
+              class="flex justify-between items-center p-2 rounded-lg"
+              [style.background-color]="'var(--bg-input)'"
+            >
+              <div>
+                <p class="text-xs font-semibold" [style.color]="'var(--text-primary)'">
+                  {{ contrib.name }}
+                </p>
+                <p class="text-xs text-gray-400">
+                  {{ contrib.date }} ·
+                  {{ contrib.user_id === expenseService.user()?.id ? 'Tú' : 'Pareja' }}
+                </p>
+              </div>
+              <p class="font-bold text-green-600">${{ contrib.amount }}</p>
+            </div>
+          </div>
+        </details>
       </div>
     </div>
 
@@ -320,12 +514,32 @@
       [style.background-color]="'var(--bg-card)'"
       [class.border-pastel-secondary]="item.user_id === expenseService.user().id"
       [class.border-pastel-primary]="item.user_id !== expenseService.user().id"
-      (click)="item.user_id === expenseService.user().id ? edit(item) : null"
+      (click)="
+        item.user_id === expenseService.user().id && !item.is_installment_concept
+          ? edit(item)
+          : null
+      "
     >
       <div class="flex items-center gap-4">
         <div class="text-2xl">{{ getIcon(item.category) }}</div>
         <div>
-          <p class="font-bold" [style.color]="'var(--text-primary)'">{{ item.name }}</p>
+          <div class="flex items-center gap-2">
+            <p class="font-bold" [style.color]="'var(--text-primary)'">{{ item.name }}</p>
+            <!-- Badge si es aportación a concepto -->
+            <span
+              *ngIf="item.installment_concept_id"
+              class="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full font-semibold"
+            >
+              📅
+            </span>
+            <!-- Badge si es concepto -->
+            <span
+              *ngIf="item.is_installment_concept"
+              class="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded-full font-semibold"
+            >
+              📋 Concepto
+            </span>
+          </div>
           <div class="flex gap-2 text-xs text-gray-400 font-semibold">
             <span>{{ item.date }}</span>
             <span
@@ -340,7 +554,7 @@
       <div class="flex flex-col items-end">
         <p class="font-bold text-lg" [style.color]="'var(--text-primary)'">${{ item.amount }}</p>
         <button
-          *ngIf="item.user_id === expenseService.user().id"
+          *ngIf="item.user_id === expenseService.user().id && !item.is_installment_concept"
           (click)="$event.stopPropagation(); delete(item.id!)"
           class="opacity-0 group-hover:opacity-100 transition text-xs text-red-400 hover:bg-red-50 px-2 py-1 rounded mt-1"
         >
