@@ -82,6 +82,9 @@ export class App {
   linkToInstallment = signal(false);
   selectedInstallmentId = signal<number | null>(null);
 
+  // Celebración de concepto completado
+  showCelebration = signal(false);
+
   categories = ['Comida', 'Transporte', 'Casa', 'Ocio', 'Salud', 'Mascotas', 'Otros'];
 
   categoryIcons: Record<string, string> = {
@@ -111,6 +114,11 @@ export class App {
   // Conceptos a plazos activos
   installmentConcepts = computed(() => {
     return this.expenseService.getAllInstallmentStats();
+  });
+
+  // Conceptos a plazos activos (sin completados) - para el selector en el formulario
+  activeInstallmentConcepts = computed(() => {
+    return this.expenseService.getAllInstallmentStats().filter((concept) => concept.remaining > 0);
   });
   // Mis Gastos del Mes
   myExpenses = computed(() =>
@@ -327,6 +335,30 @@ export class App {
         alert(validation.error);
         return;
       }
+
+      // Verificar si esta aportación completará el concepto
+      const stats = this.expenseService.getInstallmentStats(this.selectedInstallmentId()!);
+      const willComplete = stats && this.expenseForm.amount === stats.remaining;
+
+      if (willComplete) {
+        // Guardamos el nombre del concepto para la celebración
+        const conceptName = stats!.conceptName;
+
+        // Preparar el gasto y guardarlo
+        const expenseToSave: Expense = {
+          ...this.expenseForm,
+          installment_concept_id: this.selectedInstallmentId(),
+        };
+
+        const success = await this.expenseService.addExpense(expenseToSave);
+
+        if (success) {
+          this.cancelEdit();
+          // Mostrar celebración
+          this.triggerCelebration(conceptName);
+        }
+        return;
+      }
     }
 
     // Preparar el gasto con campos de vinculación si aplica
@@ -419,6 +451,49 @@ export class App {
 
   getInstallmentStats(conceptId: number): InstallmentStats | null {
     return this.expenseService.getInstallmentStats(conceptId);
+  }
+
+  // Celebración al completar concepto
+  triggerCelebration(conceptName: string) {
+    // Mostrar notificación
+    this.showCelebration.set(true);
+
+    // Crear confetti
+    this.createConfetti();
+
+    // Ocultar notificación después de 3 segundos
+    setTimeout(() => {
+      this.showCelebration.set(false);
+    }, 3000);
+
+    // Scroll suave a la sección de conceptos
+    setTimeout(() => {
+      document.querySelector('.installment-concepts-section')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    }, 500);
+  }
+
+  createConfetti() {
+    const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+    const confettiCount = 50;
+
+    for (let i = 0; i < confettiCount; i++) {
+      setTimeout(() => {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDelay = Math.random() * 0.5 + 's';
+        confetti.style.animationDuration = Math.random() * 2 + 2 + 's';
+
+        document.body.appendChild(confetti);
+
+        // Eliminar después de la animación
+        setTimeout(() => confetti.remove(), 5000);
+      }, i * 30);
+    }
   }
 
   // Helper para sanitizar CSV (prevenir CSV injection)

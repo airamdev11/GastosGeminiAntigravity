@@ -187,8 +187,10 @@
             class="flex justify-between text-xs sm:text-sm font-bold"
             [style.color]="'var(--text-secondary)'"
           >
-            <span>AIRAM: ${{ myTotal() }}</span>
-            <span>YEINI: ${{ partnerTotal() }}</span>
+            <span
+              >{{ expenseService.user().email.split('@')[0].toUpperCase() }}: ${{ myTotal() }}</span
+            >
+            <span>PAREJA: ${{ partnerTotal() }}</span>
           </div>
         </div>
       </div>
@@ -321,7 +323,10 @@
         <div *ngIf="linkToInstallment() && !isEditing()" class="space-y-2">
           <select [(ngModel)]="selectedInstallmentId" class="input-pastel">
             <option [ngValue]="null">Selecciona el concepto</option>
-            <option *ngFor="let concept of installmentConcepts()" [ngValue]="concept.conceptId">
+            <option
+              *ngFor="let concept of activeInstallmentConcepts()"
+              [ngValue]="concept.conceptId"
+            >
               {{ concept.conceptName }} - Restante: ${{ concept.remaining }}
             </option>
           </select>
@@ -423,35 +428,53 @@
     </div>
 
     <!-- SECCIÓN: Conceptos a plazos activos -->
-    <div *ngIf="installmentConcepts().length > 0" class="space-y-3">
+    <div *ngIf="installmentConcepts().length > 0" class="space-y-3 installment-concepts-section">
       <h3 class="font-bold px-2" [style.color]="'var(--text-primary)'">
         Conceptos a Plazos Activos
       </h3>
 
       <div
         *ngFor="let concept of installmentConcepts()"
-        class="p-4 rounded-2xl shadow-sm border"
+        class="p-4 rounded-2xl shadow-sm border transition-all"
         [style.background-color]="'var(--bg-card)'"
         [style.border-color]="'var(--border-color)'"
+        [class.installment-completed]="concept.remaining === 0"
       >
         <!-- Encabezado del concepto -->
         <div class="flex justify-between items-start mb-3">
           <div class="flex-1">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
               <span class="text-2xl">{{ getIcon(concept.category) }}</span>
               <h4 class="font-bold text-base" [style.color]="'var(--text-primary)'">
                 {{ concept.conceptName }}
               </h4>
+              <!-- Badge de completado -->
+              <span
+                *ngIf="concept.remaining === 0"
+                class="completed-badge text-xs bg-green-600 text-white px-3 py-1 rounded-full font-bold flex items-center gap-1"
+              >
+                ✅ Completado
+              </span>
             </div>
             <p class="text-xs text-gray-400 mt-1">
               Total: ${{ concept.totalAmount }} · Aportado: ${{ concept.contributed }}
             </p>
           </div>
           <div class="text-right">
-            <p class="text-2xl font-bold" [style.color]="'var(--text-primary)'">
+            <p
+              class="text-2xl font-bold"
+              [style.color]="concept.remaining === 0 ? '#10b981' : 'var(--text-primary)'"
+            >
+              <span *ngIf="concept.remaining === 0">🎉</span>
               ${{ concept.remaining }}
             </p>
-            <p class="text-xs text-gray-400">restante</p>
+            <p
+              class="text-xs"
+              [class.text-green-600]="concept.remaining === 0"
+              [class.text-gray-400]="concept.remaining > 0"
+            >
+              {{ concept.remaining === 0 ? '¡Pagado!' : 'restante' }}
+            </p>
           </div>
         </div>
 
@@ -467,9 +490,11 @@
             <div
               class="h-full transition-all duration-1000"
               [style.width.%]="concept.percentage > 100 ? 100 : concept.percentage"
-              [class.bg-green-500]="concept.percentage < 70"
-              [class.bg-yellow-500]="concept.percentage >= 70 && concept.percentage < 90"
-              [class.bg-pastel-primary]="concept.percentage >= 90"
+              [class.bg-green-500]="concept.percentage < 70 || concept.percentage === 100"
+              [class.bg-yellow-500]="
+                concept.percentage >= 70 && concept.percentage < 90 && concept.percentage < 100
+              "
+              [class.bg-pastel-primary]="concept.percentage >= 90 && concept.percentage < 100"
             ></div>
           </div>
         </div>
@@ -499,6 +524,12 @@
           </div>
         </details>
       </div>
+    </div>
+
+    <!-- Notificación de celebración -->
+    <div *ngIf="showCelebration()" class="celebration-notification">
+      <span class="icon">🎉</span>
+      ¡Concepto Completado!
     </div>
 
     <div class="flex justify-between items-end px-2">
