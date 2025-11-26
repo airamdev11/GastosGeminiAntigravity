@@ -51,3 +51,4 @@ Thumbs.db
 
 # Scripts SQL de limpieza de datos de prueba
 clean-test-data.sql
+*.md
