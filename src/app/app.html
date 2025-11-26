@@ -89,26 +89,30 @@
   <div *ngIf="notifications().length > 0" class="px-6 space-y-2 mb-4 animate-fade-in">
     <div
       *ngFor="let notif of notifications(); trackBy: trackByNotificationId"
-      class="rounded-xl p-4 flex justify-between items-center shadow-md animate-slide-in"
-      [class.bg-yellow-100]="notif.type === 'warning'"
-      [class.bg-red-100]="notif.type === 'danger'"
-      [class.border-l-4]="true"
-      [class.border-yellow-500]="notif.type === 'warning'"
-      [class.border-red-500]="notif.type === 'danger'"
+      class="rounded-xl p-4 flex justify-between items-center shadow-md animate-slide-in border-l-4 transition-colors"
+      [style.background-color]="
+        notif.type === 'warning' ? 'var(--alert-warning-bg)' : 'var(--alert-danger-bg)'
+      "
+      [style.border-color]="
+        notif.type === 'warning' ? 'var(--alert-warning-border)' : 'var(--alert-danger-border)'
+      "
     >
       <div class="flex items-center gap-3 flex-1">
         <span class="text-2xl">{{ notif.type === 'danger' ? '🚨' : '⚠️' }}</span>
         <p
           class="text-sm font-semibold"
-          [class.text-yellow-800]="notif.type === 'warning'"
-          [class.text-red-800]="notif.type === 'danger'"
+          [style.color]="
+            notif.type === 'warning' ? 'var(--alert-warning-text)' : 'var(--alert-danger-text)'
+          "
         >
           {{ notif.message }}
         </p>
       </div>
       <button
         (click)="dismissNotification(notif.id)"
-        class="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-white/50 transition"
+        class="p-1 rounded-full transition"
+        [style.color]="'var(--text-secondary)'"
+        [style.background-color]="'var(--hover-overlay)'"
       >
         ✕
       </button>
@@ -224,7 +228,10 @@
                 >${{ cat.total }}</span
               >
             </div>
-            <div class="w-full bg-gray-50 rounded-full h-2 overflow-hidden">
+            <div
+              class="w-full rounded-full h-2 overflow-hidden"
+              [style.background-color]="'var(--progress-bg)'"
+            >
               <div
                 class="h-full bg-pastel-accent transition-all duration-1000"
                 [style.width.%]="cat.percent"
@@ -284,13 +291,16 @@
                 >{{ individualComparison()!.myPercent }}%</span
               >
             </div>
-            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+            <div
+              class="w-full rounded-full h-3 overflow-hidden"
+              [style.background-color]="'var(--progress-track)'"
+            >
               <div
                 class="h-full bg-pastel-secondary transition-all duration-1000"
                 [style.width.%]="individualComparison()!.myPercent"
               ></div>
             </div>
-            <p class="text-xs text-gray-400 mt-1">
+            <p class="text-xs mt-1" [style.color]="'var(--text-secondary)'">
               ${{ individualComparison()!.myTotal | number : '1.0-0' }}
             </p>
           </div>
@@ -301,13 +311,16 @@
                 >{{ individualComparison()!.partnerPercent }}%</span
               >
             </div>
-            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+            <div
+              class="w-full rounded-full h-3 overflow-hidden"
+              [style.background-color]="'var(--progress-track)'"
+            >
               <div
                 class="h-full bg-pastel-primary transition-all duration-1000"
                 [style.width.%]="individualComparison()!.partnerPercent"
               ></div>
             </div>
-            <p class="text-xs text-gray-400 mt-1">
+            <p class="text-xs mt-1" [style.color]="'var(--text-secondary)'">
               ${{ individualComparison()!.partnerTotal | number : '1.0-0' }}
             </p>
           </div>
@@ -368,15 +381,17 @@
         <div class="space-y-2">
           <div
             *ngFor="let suggestion of savingsPotential()"
-            class="flex justify-between items-center p-3 rounded-xl bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800"
+            class="flex justify-between items-center p-3 rounded-xl border transition-colors"
+            [style.background-color]="'var(--badge-yellow-bg)'"
+            [style.border-color]="'var(--alert-warning-border)'"
           >
             <div class="flex items-center gap-2">
               <span class="text-lg">{{ getIcon(suggestion.category) }}</span>
-              <p class="text-sm font-semibold" [style.color]="'var(--text-primary)'">
+              <p class="text-sm font-semibold" [style.color]="'var(--badge-yellow-text)'">
                 {{ suggestion.message }}
               </p>
             </div>
-            <p class="text-sm font-bold text-yellow-700 dark:text-yellow-300">
+            <p class="text-sm font-bold" [style.color]="'var(--badge-yellow-text)'">
               ~${{ suggestion.amount }}
             </p>
           </div>
@@ -483,9 +498,11 @@
           <!-- Mostrar información del concepto seleccionado -->
           <div
             *ngIf="selectedInstallmentId()"
-            class="p-3 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800"
+            class="p-3 rounded-xl border transition-colors"
+            [style.background-color]="'var(--alert-info-bg)'"
+            [style.border-color]="'var(--alert-info-border)'"
           >
-            <p class="text-xs font-semibold text-blue-800 dark:text-blue-200">
+            <p class="text-xs font-semibold" [style.color]="'var(--alert-info-text)'">
               💡 Monto restante: ${{
                 getInstallmentStats(selectedInstallmentId()!)?.remaining || 0
               }}
@@ -605,7 +622,7 @@
                 ✅ Completado
               </span>
             </div>
-            <p class="text-xs text-gray-400 mt-1">
+            <p class="text-xs mt-1" [style.color]="'var(--text-secondary)'">
               Total: ${{ concept.totalAmount }} · Aportado: ${{ concept.contributed }}
             </p>
           </div>
@@ -635,7 +652,10 @@
               >{{ concept.percentage | number : '1.0-0' }}%</span
             >
           </div>
-          <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+          <div
+            class="w-full rounded-full h-3 overflow-hidden"
+            [style.background-color]="'var(--progress-track)'"
+          >
             <div
               class="h-full transition-all duration-1000"
               [style.width.%]="concept.percentage > 100 ? 100 : concept.percentage"
@@ -663,7 +683,7 @@
                 <p class="text-xs font-semibold" [style.color]="'var(--text-primary)'">
                   {{ contrib.name }}
                 </p>
-                <p class="text-xs text-gray-400">
+                <p class="text-xs" [style.color]="'var(--text-secondary)'">
                   {{ contrib.date }} ·
                   {{ contrib.user_id === expenseService.user()?.id ? 'Tú' : 'Pareja' }}
                 </p>
@@ -683,7 +703,10 @@
 
     <div class="flex justify-between items-end px-2">
       <h3 class="font-bold" [style.color]="'var(--text-primary)'">Últimos movimientos</h3>
-      <span class="text-xs bg-pastel-bg px-2 py-1 rounded text-gray-500"
+      <span
+        class="text-xs px-2 py-1 rounded"
+        [style.background-color]="'var(--bg-input)'"
+        [style.color]="'var(--text-secondary)'"
         >{{ expenseService.expenses().length }} reg.</span
       >
     </div>
@@ -708,23 +731,28 @@
             <!-- Badge si es aportación a concepto -->
             <span
               *ngIf="item.installment_concept_id"
-              class="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full font-semibold"
+              class="text-xs px-2 py-0.5 rounded-full font-semibold transition-colors"
+              [style.background-color]="'var(--badge-blue-bg)'"
+              [style.color]="'var(--badge-blue-text)'"
             >
               📅
             </span>
             <!-- Badge si es concepto -->
             <span
               *ngIf="item.is_installment_concept"
-              class="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded-full font-semibold"
+              class="text-xs px-2 py-0.5 rounded-full font-semibold transition-colors"
+              [style.background-color]="'var(--badge-purple-bg)'"
+              [style.color]="'var(--badge-purple-text)'"
             >
               📋 Concepto
             </span>
           </div>
-          <div class="flex gap-2 text-xs text-gray-400 font-semibold">
+          <div class="flex gap-2 text-xs font-semibold" [style.color]="'var(--text-secondary)'">
             <span>{{ item.date }}</span>
             <span
               *ngIf="item.user_id === expenseService.user().id"
-              class="text-pastel-secondary bg-green-50 px-1 rounded"
+              class="text-pastel-secondary px-1 rounded"
+              [style.background-color]="'var(--badge-green-bg)'"
               >Tú</span
             >
           </div>
@@ -736,7 +764,9 @@
         <button
           *ngIf="item.user_id === expenseService.user().id && !item.is_installment_concept"
           (click)="$event.stopPropagation(); delete(item.id!)"
-          class="opacity-0 group-hover:opacity-100 transition text-xs text-red-400 hover:bg-red-50 px-2 py-1 rounded mt-1"
+          class="opacity-0 group-hover:opacity-100 transition text-xs px-2 py-1 rounded mt-1"
+          [style.color]="'var(--badge-red-text)'"
+          [style.background-color]="'var(--button-delete-hover)'"
         >
           Eliminar
         </button>
@@ -814,7 +844,9 @@
             </div>
             <button
               (click)="deleteBudget(item.category)"
-              class="text-xs text-red-400 hover:bg-red-50 px-2 py-1 rounded transition"
+              class="text-xs px-2 py-1 rounded transition"
+              [style.color]="'var(--badge-red-text)'"
+              [style.background-color]="'var(--button-delete-hover)'"
             >
               Eliminar
             </button>
@@ -825,7 +857,10 @@
               <span [style.color]="'var(--text-secondary)'">Gastado: ${{ item.spent }}</span>
               <span [style.color]="'var(--text-secondary)'">Límite: ${{ item.limit }}</span>
             </div>
-            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+            <div
+              class="w-full rounded-full h-3 overflow-hidden"
+              [style.background-color]="'var(--progress-track)'"
+            >
               <div
                 class="h-full transition-all duration-1000"
                 [style.width.%]="item.percent > 100 ? 100 : item.percent"
@@ -889,7 +924,7 @@
         ${{ (balance() < 0 ? balance() * -1 : balance()) | number : '1.0-0' }}
       </h1>
 
-      <p class="text-sm text-gray-400 px-4 leading-relaxed">
+      <p class="text-sm px-4 leading-relaxed" [style.color]="'var(--text-secondary)'">
         <span *ngIf="balance() > 0"
           >Yeini ha gastado menos. Debería invitar la próxima salida para compensar.</span
         >

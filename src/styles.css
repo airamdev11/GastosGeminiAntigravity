@@ -1,18 +1,18 @@
 /* 1. Importación obligatoria de Tailwind v4 */
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* 2. Definición del Tema Pastel */
 @theme {
   --font-sans: 'Poppins', sans-serif;
 
   /* Paleta de colores */
-  --color-pastel-bg: #FDF6F0;
-  --color-pastel-primary: #FF9AA2;
-  --color-pastel-secondary: #B5EAD7;
+  --color-pastel-bg: #fdf6f0;
+  --color-pastel-primary: #ff9aa2;
+  --color-pastel-secondary: #b5ead7;
   --color-pastel-tertiary: #e58cff;
-  --color-pastel-accent: #C7CEEA;
-  --color-pastel-text: #4A4A4A;
-  --color-card-white: #FFFFFF;
+  --color-pastel-accent: #c7ceea;
+  --color-pastel-text: #4a4a4a;
+  --color-card-white: #ffffff;
 
   /* Animación suave */
   --animate-fade-in: fade-in 0.5s ease-out;
@@ -37,26 +37,102 @@
   color: var(--color-pastel-text);
 
   /* Variables dinámicas para modo claro/oscuro */
-  --bg-primary: #FDF6F0;
-  --bg-card: #FFFFFF;
-  --bg-input: #FDF6F0;
-  --text-primary: #4A4A4A;
-  --text-secondary: #9CA3AF;
-  --border-color: #E5E7EB;
+  --bg-primary: #fdf6f0;
+  --bg-card: #ffffff;
+  --bg-input: #fdf6f0;
+  --bg-secondary: #f9fafb;
+  --text-primary: #4a4a4a;
+  --text-secondary: #9ca3af;
+  --text-tertiary: #6b7280;
+  --border-color: #e5e7eb;
   --shadow: rgba(0, 0, 0, 0.1);
+
+  /* Badges y etiquetas */
+  --badge-blue-bg: #dbeafe;
+  --badge-blue-text: #1e40af;
+  --badge-purple-bg: #ede9fe;
+  --badge-purple-text: #6b21a8;
+  --badge-green-bg: #d1fae5;
+  --badge-green-text: #065f46;
+  --badge-yellow-bg: #fef3c7;
+  --badge-yellow-text: #92400e;
+  --badge-red-bg: #fee2e2;
+  --badge-red-text: #991b1b;
+
+  /* Notificaciones y alertas */
+  --alert-warning-bg: #fef3c7;
+  --alert-warning-border: #f59e0b;
+  --alert-warning-text: #92400e;
+  --alert-danger-bg: #fee2e2;
+  --alert-danger-border: #ef4444;
+  --alert-danger-text: #991b1b;
+  --alert-info-bg: #dbeafe;
+  --alert-info-border: #3b82f6;
+  --alert-info-text: #1e40af;
+
+  /* Estados */
+  --success-bg: #d1fae5;
+  --success-text: #065f46;
+  --success-border: #10b981;
+
+  /* Elementos interactivos */
+  --hover-overlay: rgba(0, 0, 0, 0.05);
+  --button-delete-hover: #fee2e2;
+
+  /* Barras de progreso */
+  --progress-bg: #f3f4f6;
+  --progress-track: #e5e7eb;
 
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Modo Oscuro */
 :root.dark {
-  --bg-primary: #1A1A1A;
-  --bg-card: #2D2D2D;
-  --bg-input: #3A3A3A;
-  --text-primary: #E5E5E5;
-  --text-secondary: #9CA3AF;
+  --bg-primary: #0f0f0f;
+  --bg-card: #1f1f1f;
+  --bg-input: #2a2a2a;
+  --bg-secondary: #171717;
+  --text-primary: #f5f5f5;
+  --text-secondary: #a3a3a3;
+  --text-tertiary: #737373;
   --border-color: #404040;
   --shadow: rgba(0, 0, 0, 0.5);
+
+  /* Badges y etiquetas - modo oscuro */
+  --badge-blue-bg: #1e3a8a;
+  --badge-blue-text: #93c5fd;
+  --badge-purple-bg: #581c87;
+  --badge-purple-text: #c4b5fd;
+  --badge-green-bg: #065f46;
+  --badge-green-text: #6ee7b7;
+  --badge-yellow-bg: #78350f;
+  --badge-yellow-text: #fcd34d;
+  --badge-red-bg: #7f1d1d;
+  --badge-red-text: #fca5a5;
+
+  /* Notificaciones y alertas - modo oscuro */
+  --alert-warning-bg: #78350f;
+  --alert-warning-border: #f59e0b;
+  --alert-warning-text: #fcd34d;
+  --alert-danger-bg: #7f1d1d;
+  --alert-danger-border: #ef4444;
+  --alert-danger-text: #fca5a5;
+  --alert-info-bg: #1e3a8a;
+  --alert-info-border: #3b82f6;
+  --alert-info-text: #93c5fd;
+
+  /* Estados - modo oscuro */
+  --success-bg: #064e3b;
+  --success-text: #6ee7b7;
+  --success-border: #10b981;
+
+  /* Elementos interactivos - modo oscuro */
+  --hover-overlay: rgba(255, 255, 255, 0.05);
+  --button-delete-hover: rgba(239, 68, 68, 0.1);
+
+  /* Barras de progreso - modo oscuro */
+  --progress-bg: #262626;
+  --progress-track: #404040;
 
   background-color: var(--bg-primary);
   color: var(--text-primary);

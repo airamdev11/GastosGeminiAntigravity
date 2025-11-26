@@ -33,14 +33,9 @@
 
 /* Clase para tarjetas completadas */
 .installment-completed {
-  background: linear-gradient(135deg, #d4f4dd 0%, #c8f0d4 100%) !important;
-  border: 2px solid #10b981 !important;
+  background: var(--success-bg) !important;
+  border: 2px solid var(--success-border) !important;
   animation: pulse-success 0.6s ease-in-out;
-}
-
-.dark .installment-completed {
-  background: linear-gradient(135deg, #064e3b 0%, #065f46 100%) !important;
-  border: 2px solid #34d399 !important;
 }
 
 /* Badge de completado */
