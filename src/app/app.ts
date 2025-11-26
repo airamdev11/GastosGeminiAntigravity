@@ -99,6 +99,17 @@ export class App {
     Otros: '📦',
   };
 
+  // Símbolos para PDF (ASCII-friendly)
+  categorySymbols: Record<string, string> = {
+    Comida: '[F]', // Food
+    Transporte: '[T]', // Transport
+    Casa: '[H]', // Home
+    Ocio: '[E]', // Entertainment
+    Salud: '[M]', // Medical
+    Mascotas: '[P]', // Pet
+    Otros: '[O]', // Other
+  };
+
   // Exponer Math para el template
   Math = Math;
 
@@ -226,7 +237,7 @@ export class App {
   // Tendencias mensuales (últimos 3 meses)
   monthlyTrends = computed(() => {
     const trends = [];
-    const currentDate = new Date(this.selectedMonth() + '-01');
+    const currentDate = new Date(this.selectedMonth() + '-01T12:00:00');
 
     for (let i = 2; i >= 0; i--) {
       const date = new Date(currentDate);
@@ -389,6 +400,11 @@ export class App {
 
   getIcon(cat: string) {
     return this.categoryIcons[cat] || '✨';
+  }
+
+  // Para PDFs: devuelve símbolo ASCII en lugar de emoji
+  getSymbol(cat: string) {
+    return this.categorySymbols[cat] || '[?]';
   }
 
   // Cargar datos al formulario para editar
@@ -656,11 +672,13 @@ export class App {
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
-    const monthYear = new Date(this.selectedMonth() + '-01').toLocaleDateString('es-ES', {
+    //this.selectedMonth() es un string en el formato 'YYYY-MM'
+    //-01T12:00:00 es para que la fecha sea valida
+    const monthYear = new Date(this.selectedMonth() + '-01T12:00:00').toLocaleDateString('es-ES', {
       month: 'long',
       year: 'numeric',
     });
-    doc.text(`Período: ${monthYear.toUpperCase()}`, 14, 45);
+    doc.text(`Periodo: ${monthYear.toUpperCase()}`, 14, 45);
 
     // --- RESUMEN EJECUTIVO ---
     let yPos = 55;
@@ -694,7 +712,6 @@ export class App {
 
     yPos += 5;
     const categoryData = this.categoryStats().map((cat) => [
-      this.getIcon(cat.name),
       cat.name,
       `$${cat.total.toLocaleString('es-MX')}`,
       `${cat.percent.toFixed(1)}%`,
@@ -702,15 +719,14 @@ export class App {
 
     autoTable(doc, {
       startY: yPos,
-      head: [['', 'Categoría', 'Monto', '% del Total']],
+      head: [['Categoría', 'Monto', '% del Total']],
       body: categoryData,
       theme: 'striped',
       headStyles: { fillColor: [0, 0, 0], fontSize: 9 },
       styles: { fontSize: 8, cellPadding: 3 },
       columnStyles: {
-        0: { cellWidth: 15, halign: 'center' },
+        1: { halign: 'right' },
         2: { halign: 'right' },
-        3: { halign: 'right' },
       },
     });
 
@@ -725,26 +741,26 @@ export class App {
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .map((e) => [
         new Date(e.date).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' }),
-        e.name.length > 35 ? e.name.substring(0, 35) + '...' : e.name,
-        this.getIcon(e.category),
+        e.name.length > 30 ? e.name.substring(0, 30) + '...' : e.name,
+        e.category,
         `$${e.amount.toLocaleString('es-MX')}`,
         e.user_id === this.expenseService.user().id ? userName : 'Pareja',
-        e.installment_concept_id ? '📅' : '',
+        e.installment_concept_id ? 'Sí' : '',
       ]);
 
     autoTable(doc, {
       startY: yPos,
-      head: [['Fecha', 'Concepto', 'Cat', 'Monto', 'Quién', '']],
+      head: [['Fecha', 'Concepto', 'Categoría', 'Monto', 'Quién', 'A Plazo']],
       body: movementsData,
       theme: 'grid',
       headStyles: { fillColor: [0, 0, 0], fontSize: 8 },
       styles: { fontSize: 7, cellPadding: 2 },
       columnStyles: {
         0: { cellWidth: 18 },
-        2: { cellWidth: 12, halign: 'center' },
+        2: { cellWidth: 22 },
         3: { halign: 'right', cellWidth: 25 },
         4: { cellWidth: 20 },
-        5: { cellWidth: 10, halign: 'center' },
+        5: { cellWidth: 15, halign: 'center' },
       },
     });
 
