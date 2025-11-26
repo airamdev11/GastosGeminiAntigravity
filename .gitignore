@@ -51,4 +51,8 @@ Thumbs.db
 
 # Scripts SQL de limpieza de datos de prueba
 clean-test-data.sql
-*.md
+
+# Documentación privada y notas personales
+CLEAN_DATA_README.md
+*_NOTES.md
+*_PRIVATE.md
