@@ -48,3 +48,6 @@ Thumbs.db
 /src/environments/environment.ts
 /src/environments/environment.development.ts
 /src/environments/environment.production.ts
+
+# Scripts SQL de limpieza de datos de prueba
+clean-test-data.sql
